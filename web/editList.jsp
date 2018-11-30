@@ -30,44 +30,33 @@
 
 <div id="myDiv">
     <form id="logout" action="LogoutServlet" method="POST">
-        <input type="submit" value="Log Out" name="logout">
+        <input type="submit" value="Log Out" name="logout"/>
     </form>
 </div>
 
-<br>
-
-<form id="CreateUser" action="AdminServlet" method="post">
-    <input type="submit" value="Create User" name="Submit">
-</form>
-
+<form id="ConfirmEdit" action="AdminServlet" method="post">
 <table>
+
     <tr>
         <th>User ID</th>
         <th>Username</th>
         <th>Access Level</th>
-        <th>Edit</th>
-        <th>Delete</th>
         <th></th>
     </tr>
-    <c:forEach items="${userList}" var="user" >
-        <tr>
-            <td><c:out value="${user.userID}"/></td>
-            <td><c:out value="${user.username}"/></td>
-            <td><c:out value="${user.accessLevel}"/></td>
-            <td><form id="Edit" action="AdminServlet" method="post">
-                <input type="hidden" name="userID" value="${user.userID}">
-                <input type="hidden" name="username" value="${user.username}">
-                <input type="hidden" name="accessLevel" value="${user.accessLevel}">
-                <input type="submit" value="Edit" name="Submit">
-            </form></td>
-            <td><form id="Delete" action="AdminServlet" method="post">
-                <input type="hidden" name="userID" value="${user.userID}">
-                <input type="submit" value="Delete" name="Submit">
-            </form></td>
-            <td></td>
-        </tr>
-    </c:forEach>
+
+    <tr>
+
+        <td>${userID}<input type="hidden" name="userID" value="${userID}"/></td>
+        <td><input type="text" name="username" value="${username}"/></td>
+        <td><input type="text" name="accessLevel" value="${accessLevel}"/></td>
+        <td>
+            <input type="submit" value="Confirm Edit" name="Submit">
+        </td>
+
+    </tr>
+
 </table>
+</form>
 
 
 

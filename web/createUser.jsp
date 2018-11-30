@@ -30,21 +30,35 @@
 
 <div id="myDiv">
     <form id="logout" action="LogoutServlet" method="POST">
-        <input type="submit" value="Log Out" name="logout">
+        <input type="submit" value="Log Out" name="logout"/>
     </form>
 </div>
 
-<form name="viewUser" action="AdminServlet" method="post">
-    <input type="submit" value="Create/Edit/Delete/View Users" name="Submit"/>
+<form id="CreateUser" action="AdminServlet" method="post">
+    <table>
+
+        <tr>
+            <th>Username</th>
+            <th>Access Level</th>
+            <th>Password</th>
+            <th></th>
+        </tr>
+
+        <tr>
+
+            <td><input type="text" name="username" value="${username}"/></td>
+            <td><input type="text" name="accessLevel" value="${accessLevel}"/></td>
+            <td><input type="text" name="password" value=""/></td>
+            <td>
+                <input type="submit" value="Confirm Creation" name="Submit">
+            </td>
+
+        </tr>
+
+    </table>
 </form>
 
 
-<br>
-<a href="globalLink.jsp">Global Link</a>
-
-
-
-<br>
 
 
 </body>

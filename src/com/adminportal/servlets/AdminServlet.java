@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.rmi.Naming;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,20 +26,51 @@ public class AdminServlet extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException{
         HttpSession session = request.getSession(false);
+        String submitRequest = request.getParameter("Submit");
         if(session == null) {
             response.sendRedirect("error.jsp");
             return;
         }
 
-        /*if(request.getParameter("Submit") == null){
+        if(submitRequest == null){
             response.sendRedirect("index.jsp");
             return;
         }
-        else if(request.getParameter("Submit").equals("editUser")){
+        else if(submitRequest.equals("Edit")){
             editUser(request,response);
             return;
-        }*/
+        }
+        else if(submitRequest.equals("Create/Edit/Delete/View Users")){
+            getUsers(request,response);
+            displayUsers(request,response);
+        }
+        else if(submitRequest.equals("Confirm Edit")){
+            confirmEdit(request,response);
+            getUsers(request,response);
+            displayUsers(request,response);
+        }
+        else if(submitRequest.equals("Delete")){
+            deleteUser(request,response);
+            getUsers(request,response);
+            displayUsers(request,response);
+        }
+        else if(submitRequest.equals("Create User")){
+            createUser(request,response);
+        }
+        else if(submitRequest.equals("Confirm Creation")){
+            confirmCreate(request,response);
+            getUsers(request,response);
+            displayUsers(request,response);
+        }
+        else{
+            request.getRequestDispatcher("adminHome.jsp").forward(request,response);
+        }
 
+
+
+    }
+
+    protected void getUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ArrayList<LoginBean> results = new ArrayList<LoginBean>();
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -72,20 +104,105 @@ public class AdminServlet extends HttpServlet {
             }
         }
         request.setAttribute("userList",results);
+    }
+
+    protected void displayUsers(HttpServletRequest request,HttpServletResponse response) throws IOException, ServletException{
         request.getRequestDispatcher("userList.jsp").forward(request,response);
-
-
     }
 
     protected void editUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        /*Connection conn = null;
+        request.setAttribute("userID",request.getParameter("userID"));
+        request.setAttribute("username",request.getParameter("username"));
+        request.setAttribute("accessLevel",request.getParameter("accessLevel"));
+        request.getRequestDispatcher("editList.jsp").forward(request,response);
+    }
+
+    protected void confirmEdit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Context context = new InitialContext();
+            DataSource dataSource = (DataSource) context.lookup(DATASOURCE_CONTEXT);
+            conn = dataSource.getConnection();
+            pstmt = conn.prepareStatement("UPDATE login SET username=?,accessLevel=? WHERE userID=? ");
+            pstmt.setString(1, request.getParameter("username"));
+            pstmt.setString(2, request.getParameter("accessLevel"));
+            pstmt.setString(3, request.getParameter("userID"));
+            pstmt.executeUpdate();
+        } catch (SQLException | NamingException e){
+            e.printStackTrace();
+        }
+        finally{
+            try{
+                if(pstmt != null){
+                    pstmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+
+    }
+    protected void deleteUser(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
+        Connection conn = null;
         PreparedStatement pstmt = null;
         try{
             Context context = new InitialContext();
             DataSource dataSource = (DataSource) context.lookup(DATASOURCE_CONTEXT);
             conn = dataSource.getConnection();
-            pstmt = conn.prepareStatement("UPDATE login SET ")
-        }*/
+            pstmt = conn.prepareStatement("DELETE FROM login WHERE userID=?");
+            pstmt.setString(1,request.getParameter("userID"));
+            pstmt.executeUpdate();
+        } catch (SQLException | NamingException e){
+            e.printStackTrace();
+        } finally{
+            try{
+                if(pstmt != null){
+                    pstmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    protected void createUser(HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException {
+        request.getRequestDispatcher("createUser.jsp").forward(request,response);
+    }
+
+    protected void confirmCreate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Context context = new InitialContext();
+            DataSource dataSource = (DataSource) context.lookup(DATASOURCE_CONTEXT);
+            conn = dataSource.getConnection();
+            pstmt = conn.prepareStatement("INSERT INTO login(username,accesslevel,password) VALUES (?,?,?)");
+            pstmt.setString(1, request.getParameter("username"));
+            pstmt.setString(2, request.getParameter("accessLevel"));
+            pstmt.setString(3, request.getParameter("password"));
+            pstmt.executeUpdate();
+        } catch (SQLException | NamingException e){
+            e.printStackTrace();
+        }
+        finally{
+            try{
+                if(pstmt != null){
+                    pstmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
     }
 
 

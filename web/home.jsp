@@ -11,6 +11,9 @@
     if(mySession == null){
     response.sendRedirect("error.jsp");
     }
+    else if(mySession.getAttribute("user") == null){
+        response.sendRedirect("error.jsp");
+    }
     else{
         if(((LoginBean)mySession.getAttribute("user")).getAccessLevel() != 1){
             response.sendRedirect("error.jsp");
@@ -29,6 +32,11 @@
         <input type="submit" value="Log Out" name="logout">
     </form>
 </div>
+
+<br>
+<a href="globalLink.jsp">Global Link</a>
+<br>
+<a href="studentLink.jsp">Student Link</a>
 
 
 
